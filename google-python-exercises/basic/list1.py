@@ -39,7 +39,6 @@ def match_ends(words):
 # before combining them.
 def front_x(words):
   # +++your code here+++
-	#words.sort()
 	hasX = []
 	noX = []
 	for aWord in words:
@@ -61,9 +60,16 @@ def front_x(words):
 # e.g. [(1, 7), (1, 3), (3, 4, 5), (2, 2)] yields
 # [(2, 2), (1, 3), (3, 4, 5), (1, 7)]
 # Hint: use a custom key= function to extract the last element form each tuple.
+def sortTup(aT,bT):
+    if aT[-1] < bT[-1]:
+        return -1
+    else:
+        return 1
+
 def sort_last(tuples):
   # +++your code here+++
-  return
+	tuples.sort(sortTup)
+  	return tuples
 
 
 # Simple provided test() function used in main() to print
