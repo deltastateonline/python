@@ -11,10 +11,13 @@ def main():
     renderMenu()
     
     options = {
-        "D":deleteDatabase,
+        "X":deleteDatabase,
         "C":createDatabase,
         "I":insertRecord,
-        "R":readRecords
+        "R":readRecords,
+        "F":findRecord,
+        "D":delRecord
+        
     }    
     
     db = sqlite3.connect('data/mydb.sqlite') 
@@ -32,10 +35,12 @@ def main():
 def renderMenu():
     print """**********************************
     (C)reate Database ..   
-    (D)elete Database ..  
+    (D)elete Record ..  
+    (F)ind Records ..  
     (I)nsert Records ..  
-    (R)ead Records
-    (Q)uit Program ..   
+    (R)ead Records..
+    (Q)uit Program ..
+    (X)elete Database ..  
 **********************************"""
     
 
@@ -96,14 +101,58 @@ def readRecords(db):
         cursor.execute('''select * from carlist''')                       
         allRecords = cursor.fetchall()
         for x in allRecords:
-            print "%s\t| %.2f"%(x["carMake"],x["price"])
+            print "%4d %s\t| %10.2f"%(x["id"],x["carMake"],x["price"])
            
                
         db.commit()
     except BaseException as inst:
         print inst
         print("Something went wrong!  Try again...")
-    
+   
+
+def findRecord(db):
+    print "Finding a record.."
+    carMake = input("Enter the Car Make..")
+    try:
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+       
+        cursor.execute('''select * from carlist where carMake like ?''',('%'+carMake+'%',))                       
+        allRecords = cursor.fetchall()
+        if allRecords :
+        	for x in allRecords:
+        		print "%4d  %s\t| %10.2f"%(x["id"],x["carMake"],x["price"])
+        else:
+         	 print "Unable to find record for search term {0}".format(carMake)
+               
+        db.commit()
+    except BaseException as inst:
+        print inst
+        print("Something went wrong!  Try again...")
+ 
+ 
+def delRecord(db):
+    print "Delete a record.."
+    carMake = input("Enter the Car Make..")
+    try:
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+       
+        cursor.execute('''select * from carlist where carMake like ?''',('%'+carMake+'%',))                      
+        allRecords = cursor.fetchall()
+        if allRecords :
+        	for x in allRecords:
+        		print "%4d  %s\t| %10.2f"%(x["id"],x["carMake"],x["price"])
+        		deleteRec = input("Delete? (Y)es or (N)o ..")
+        		if(deleteRec.upper() == "Y"):
+        			cursor.execute('''delete from carlist where id = ?''',(x["id"],)) 
+        else:
+         	 print "Unable to find record for search term {0}".format(carMake)
+               
+        db.commit()
+    except BaseException as inst:
+        print inst
+        print("Something went wrong!  Try again...")   
     
 
 if __name__ == '__main__':
